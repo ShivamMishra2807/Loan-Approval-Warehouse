@@ -1,0 +1,81 @@
+branch_id,branch_state,branch_city,branch_type,region,branch_open_date
+BR0001,Andhra Pradesh,Vijayawada,Urban,South,2002-11-03
+BR0002,Gujarat,Ahmedabad,Rural,West,2020-02-22
+BR0003,Odisha,Bhubaneswar,Semi-Urban,East,2018-05-27
+BR0004,Kerala,Kochi,Metro,South,2016-04-22
+BR0005,Gujarat,Vadodara,Rural,West,2000-01-05
+BR0006,West Bengal,Howrah,Semi-Urban,East,2008-07-27
+BR0007,Tamil Nadu,Coimbatore,Metro,South,2013-09-06
+BR0008,Tamil Nadu,Chennai,Rural,South,2021-06-11
+BR0009,Delhi,Dwarka,Rural,North,2002-02-25
+BR0010,Gujarat,Ahmedabad,Metro,West,2020-12-31
+BR0011,Delhi,New Delhi,Metro,North,2007-05-10
+BR0012,Uttar Pradesh,Kanpur,Semi-Urban,North,2010-01-20
+BR0013,Punjab,Amritsar,Metro,North,2019-06-18
+BR0014,Rajasthan,Udaipur,Semi-Urban,West,2005-04-21
+BR0015,Maharashtra,Pune,Semi-Urban,West,2018-09-15
+BR0016,Gujarat,Surat,Semi-Urban,West,2005-01-27
+BR0017,Bihar,Gaya,Urban,East,2005-02-03
+BR0018,Maharashtra,Thane,Urban,West,2007-02-07
+BR0019,Andhra Pradesh,Vijayawada,Metro,South,2015-05-19
+BR0020,Tamil Nadu,Chennai,Rural,South,2003-05-08
+BR0021,West Bengal,Howrah,Semi-Urban,East,2017-10-22
+BR0022,Delhi,Dwarka,Urban,North,2001-09-29
+BR0023,Odisha,Bhubaneswar,Semi-Urban,East,2005-08-14
+BR0024,Karnataka,Hubballi,Semi-Urban,South,2007-03-04
+BR0025,Tamil Nadu,Coimbatore,Urban,South,2021-09-13
+BR0026,Rajasthan,Jaipur,Rural,West,2002-04-09
+BR0027,Karnataka,Mangaluru,Metro,South,2006-08-12
+BR0028,Maharashtra,Nagpur,Semi-Urban,West,2016-12-27
+BR0029,Maharashtra,Thane,Urban,West,2016-12-01
+BR0030,Maharashtra,Mumbai,Urban,West,2005-02-28
+BR0031,Tamil Nadu,Madurai,Urban,South,2014-08-20
+BR0032,Rajasthan,Jodhpur,Metro,West,2019-11-02
+BR0033,Uttar Pradesh,Varanasi,Urban,North,2005-02-17
+BR0034,Delhi,New Delhi,Semi-Urban,North,2016-05-01
+BR0035,Uttar Pradesh,Noida,Semi-Urban,North,2018-10-28
+BR0036,Tamil Nadu,Madurai,Urban,South,2001-09-28
+BR0037,Gujarat,Surat,Semi-Urban,West,2017-08-06
+BR0038,Tamil Nadu,Chennai,Metro,South,2015-04-21
+BR0039,Maharashtra,Mumbai,Metro,West,2003-01-02
+BR0040,Maharashtra,Nagpur,Semi-Urban,West,2017-08-25
+BR0041,Maharashtra,Nagpur,Urban,West,2000-12-03
+BR0042,Haryana,Panipat,Metro,North,2020-02-13
+BR0043,Bihar,Patna,Semi-Urban,East,2004-09-14
+BR0044,Andhra Pradesh,Visakhapatnam,Metro,South,2010-10-04
+BR0045,Delhi,New Delhi,Urban,North,2013-06-04
+BR0046,Maharashtra,Mumbai,Semi-Urban,West,2005-11-22
+BR0047,Delhi,Dwarka,Urban,North,2015-05-15
+BR0048,Uttar Pradesh,Varanasi,Urban,North,2012-08-25
+BR0049,Uttar Pradesh,Varanasi,Metro,North,2013-03-06
+BR0050,Karnataka,Hubballi,Semi-Urban,South,2010-02-12
+BR0051,Andhra Pradesh,Guntur,Rural,South,2007-07-23
+BR0052,Kerala,Kozhikode,Semi-Urban,South,2006-02-22
+BR0053,Odisha,Cuttack,Metro,East,2008-12-28
+BR0054,Telangana,Warangal,Urban,South,2013-09-22
+BR0055,West Bengal,Howrah,Semi-Urban,East,2007-08-04
+BR0056,Maharashtra,Thane,Semi-Urban,West,2016-12-18
+BR0057,Maharashtra,Pune,Urban,West,2007-02-16
+BR0058,Tamil Nadu,Chennai,Rural,South,2013-05-16
+BR0059,West Bengal,Howrah,Urban,East,2004-07-06
+BR0060,Assam,Dibrugarh,Urban,East,2008-06-26
+BR0061,Uttar Pradesh,Varanasi,Metro,North,2014-04-10
+BR0062,Delhi,Dwarka,Rural,North,2010-05-07
+BR0063,Madhya Pradesh,Bhopal,Semi-Urban,Central,2005-10-30
+BR0064,Telangana,Warangal,Semi-Urban,South,2013-09-02
+BR0065,Kerala,Kozhikode,Urban,South,2005-04-10
+BR0066,West Bengal,Kolkata,Urban,East,2011-09-29
+BR0067,West Bengal,Kolkata,Metro,East,2020-10-11
+BR0068,Tamil Nadu,Madurai,Rural,South,2006-07-16
+BR0069,Delhi,Dwarka,Urban,North,2002-07-02
+BR0070,Gujarat,Ahmedabad,Semi-Urban,West,2002-05-12
+BR0071,Uttar Pradesh,Lucknow,Semi-Urban,North,2010-06-10
+BR0072,Kerala,Kozhikode,Semi-Urban,South,2007-06-23
+BR0073,Telangana,Hyderabad,Urban,South,2010-06-17
+BR0074,Maharashtra,Thane,Urban,West,2008-03-19
+BR0075,Maharashtra,Nashik,Urban,West,2002-02-15
+BR0076,Uttar Pradesh,Kanpur,Metro,North,2006-02-07
+BR0077,Telangana,Hyderabad,Rural,South,2016-12-13
+BR0078,Uttar Pradesh,Kanpur,Urban,North,2016-07-19
+BR0079,Madhya Pradesh,Indore,Semi-Urban,Central,2004-11-23
+BR0080,Maharashtra,Nagpur,Rural,West,2020-06-17

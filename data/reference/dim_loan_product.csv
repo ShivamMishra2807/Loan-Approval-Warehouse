@@ -1,0 +1,7 @@
+product_key,loan_product,min_amount_inr,max_amount_inr,typical_tenure_months,indicative_rate_min_pct,indicative_rate_max_pct
+1,Personal Loan,50000,1500000,12|24|36|48|60,10.5,24.0
+2,Home Loan,800000,12000000,60|120|180|240|300,7.5,10.5
+3,Vehicle Loan,150000,2500000,12|24|36|48|60|72,8.0,15.0
+4,Business Loan,200000,5000000,12|24|36|48|60,11.0,22.0
+5,MSME Loan,100000,4000000,12|24|36|48|60|84,9.0,18.0
+6,Agriculture Loan,50000,1500000,6|12|24|36|48,7.0,14.0

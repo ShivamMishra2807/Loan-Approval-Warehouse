@@ -1,0 +1,442 @@
+{
+  "dataset": {
+    "name": "loan_applications_india_synthetic.csv",
+    "synthetic": true,
+    "rows": 5000,
+    "columns": 55,
+    "approved_count": 2703,
+    "rejected_count": 2297,
+    "approval_rate_pct": 54.06,
+    "target": "loan_status"
+  },
+  "best_model": "Random Forest",
+  "metrics": [
+    {
+      "model": "Logistic Regression",
+      "accuracy": 0.7587,
+      "precision_approved": 0.7672,
+      "recall_approved": 0.7956,
+      "f1_approved": 0.7811,
+      "roc_auc": 0.8227,
+      "confusion_matrix": [
+        [
+          246,
+          98
+        ],
+        [
+          83,
+          323
+        ]
+      ],
+      "roc_curve": [
+        {
+          "fpr": 0.0,
+          "tpr": 0.0
+        },
+        {
+          "fpr": 0.0145,
+          "tpr": 0.1059
+        },
+        {
+          "fpr": 0.032,
+          "tpr": 0.202
+        },
+        {
+          "fpr": 0.0465,
+          "tpr": 0.2833
+        },
+        {
+          "fpr": 0.0669,
+          "tpr": 0.4089
+        },
+        {
+          "fpr": 0.0872,
+          "tpr": 0.5049
+        },
+        {
+          "fpr": 0.1017,
+          "tpr": 0.5517
+        },
+        {
+          "fpr": 0.125,
+          "tpr": 0.5911
+        },
+        {
+          "fpr": 0.1541,
+          "tpr": 0.6552
+        },
+        {
+          "fpr": 0.1773,
+          "tpr": 0.6724
+        },
+        {
+          "fpr": 0.2122,
+          "tpr": 0.6921
+        },
+        {
+          "fpr": 0.2384,
+          "tpr": 0.7414
+        },
+        {
+          "fpr": 0.2558,
+          "tpr": 0.7783
+        },
+        {
+          "fpr": 0.311,
+          "tpr": 0.8079
+        },
+        {
+          "fpr": 0.343,
+          "tpr": 0.8227
+        },
+        {
+          "fpr": 0.3837,
+          "tpr": 0.8448
+        },
+        {
+          "fpr": 0.4186,
+          "tpr": 0.8596
+        },
+        {
+          "fpr": 0.4477,
+          "tpr": 0.8842
+        },
+        {
+          "fpr": 0.4884,
+          "tpr": 0.9039
+        },
+        {
+          "fpr": 0.5349,
+          "tpr": 0.9187
+        },
+        {
+          "fpr": 0.5814,
+          "tpr": 0.936
+        },
+        {
+          "fpr": 0.625,
+          "tpr": 0.9483
+        },
+        {
+          "fpr": 0.6686,
+          "tpr": 0.9606
+        },
+        {
+          "fpr": 0.7267,
+          "tpr": 0.9754
+        },
+        {
+          "fpr": 0.7616,
+          "tpr": 0.9901
+        },
+        {
+          "fpr": 1.0,
+          "tpr": 1.0
+        }
+      ]
+    },
+    {
+      "model": "Decision Tree",
+      "accuracy": 0.7387,
+      "precision_approved": 0.7586,
+      "recall_approved": 0.7586,
+      "f1_approved": 0.7586,
+      "roc_auc": 0.764,
+      "confusion_matrix": [
+        [
+          246,
+          98
+        ],
+        [
+          98,
+          308
+        ]
+      ],
+      "roc_curve": [
+        {
+          "fpr": 0.0,
+          "tpr": 0.0
+        },
+        {
+          "fpr": 0.1017,
+          "tpr": 0.2586
+        },
+        {
+          "fpr": 0.1105,
+          "tpr": 0.2882
+        },
+        {
+          "fpr": 0.1192,
+          "tpr": 0.3202
+        },
+        {
+          "fpr": 0.1279,
+          "tpr": 0.4138
+        },
+        {
+          "fpr": 0.1308,
+          "tpr": 0.436
+        },
+        {
+          "fpr": 0.1337,
+          "tpr": 0.4557
+        },
+        {
+          "fpr": 0.1424,
+          "tpr": 0.4828
+        },
+        {
+          "fpr": 0.1657,
+          "tpr": 0.5296
+        },
+        {
+          "fpr": 0.1773,
+          "tpr": 0.5714
+        },
+        {
+          "fpr": 0.2355,
+          "tpr": 0.7315
+        },
+        {
+          "fpr": 0.2413,
+          "tpr": 0.7438
+        },
+        {
+          "fpr": 0.2674,
+          "tpr": 0.7512
+        },
+        {
+          "fpr": 0.2878,
+          "tpr": 0.7586
+        },
+        {
+          "fpr": 0.3227,
+          "tpr": 0.7808
+        },
+        {
+          "fpr": 0.3372,
+          "tpr": 0.7882
+        },
+        {
+          "fpr": 0.3459,
+          "tpr": 0.7906
+        },
+        {
+          "fpr": 0.5494,
+          "tpr": 0.8744
+        },
+        {
+          "fpr": 0.561,
+          "tpr": 0.8867
+        },
+        {
+          "fpr": 0.6366,
+          "tpr": 0.9138
+        },
+        {
+          "fpr": 0.6483,
+          "tpr": 0.9212
+        },
+        {
+          "fpr": 0.657,
+          "tpr": 0.9335
+        },
+        {
+          "fpr": 0.6657,
+          "tpr": 0.9409
+        },
+        {
+          "fpr": 0.686,
+          "tpr": 0.9433
+        },
+        {
+          "fpr": 0.75,
+          "tpr": 0.9532
+        },
+        {
+          "fpr": 1.0,
+          "tpr": 1.0
+        }
+      ]
+    },
+    {
+      "model": "Random Forest",
+      "accuracy": 0.736,
+      "precision_approved": 0.7364,
+      "recall_approved": 0.798,
+      "f1_approved": 0.766,
+      "roc_auc": 0.8153,
+      "confusion_matrix": [
+        [
+          228,
+          116
+        ],
+        [
+          82,
+          324
+        ]
+      ],
+      "roc_curve": [
+        {
+          "fpr": 0.0,
+          "tpr": 0.0
+        },
+        {
+          "fpr": 0.0087,
+          "tpr": 0.0714
+        },
+        {
+          "fpr": 0.0203,
+          "tpr": 0.1823
+        },
+        {
+          "fpr": 0.0465,
+          "tpr": 0.2537
+        },
+        {
+          "fpr": 0.0581,
+          "tpr": 0.33
+        },
+        {
+          "fpr": 0.0843,
+          "tpr": 0.4163
+        },
+        {
+          "fpr": 0.093,
+          "tpr": 0.4975
+        },
+        {
+          "fpr": 0.1192,
+          "tpr": 0.5764
+        },
+        {
+          "fpr": 0.1512,
+          "tpr": 0.6232
+        },
+        {
+          "fpr": 0.1686,
+          "tpr": 0.6626
+        },
+        {
+          "fpr": 0.218,
+          "tpr": 0.6946
+        },
+        {
+          "fpr": 0.2471,
+          "tpr": 0.7266
+        },
+        {
+          "fpr": 0.2907,
+          "tpr": 0.7783
+        },
+        {
+          "fpr": 0.3372,
+          "tpr": 0.798
+        },
+        {
+          "fpr": 0.3779,
+          "tpr": 0.8251
+        },
+        {
+          "fpr": 0.4157,
+          "tpr": 0.8547
+        },
+        {
+          "fpr": 0.4622,
+          "tpr": 0.8768
+        },
+        {
+          "fpr": 0.5,
+          "tpr": 0.8892
+        },
+        {
+          "fpr": 0.5494,
+          "tpr": 0.9138
+        },
+        {
+          "fpr": 0.6017,
+          "tpr": 0.9483
+        },
+        {
+          "fpr": 0.657,
+          "tpr": 0.9557
+        },
+        {
+          "fpr": 0.7035,
+          "tpr": 0.9581
+        },
+        {
+          "fpr": 0.7616,
+          "tpr": 0.9778
+        },
+        {
+          "fpr": 0.814,
+          "tpr": 0.9951
+        },
+        {
+          "fpr": 0.8924,
+          "tpr": 1.0
+        },
+        {
+          "fpr": 0.9797,
+          "tpr": 1.0
+        },
+        {
+          "fpr": 1.0,
+          "tpr": 1.0
+        }
+      ]
+    }
+  ],
+  "generated_at_utc": "2026-10-17T13:37:35.732183+00:00",
+  "product_summary": [
+    {
+      "loan_product": "Agriculture Loan",
+      "applications": 371,
+      "approved": 179,
+      "rejected": 192,
+      "requested_amount_inr": 286319000.0,
+      "approval_rate_pct": 48.25
+    },
+    {
+      "loan_product": "Business Loan",
+      "applications": 644,
+      "approved": 346,
+      "rejected": 298,
+      "requested_amount_inr": 1661617000.0,
+      "approval_rate_pct": 53.73
+    },
+    {
+      "loan_product": "Home Loan",
+      "applications": 1013,
+      "approved": 587,
+      "rejected": 426,
+      "requested_amount_inr": 6475119000.0,
+      "approval_rate_pct": 57.95
+    },
+    {
+      "loan_product": "MSME Loan",
+      "applications": 656,
+      "approved": 320,
+      "rejected": 336,
+      "requested_amount_inr": 1384809000.0,
+      "approval_rate_pct": 48.78
+    },
+    {
+      "loan_product": "Personal Loan",
+      "applications": 1487,
+      "approved": 808,
+      "rejected": 679,
+      "requested_amount_inr": 1155542000.0,
+      "approval_rate_pct": 54.34
+    },
+    {
+      "loan_product": "Vehicle Loan",
+      "applications": 829,
+      "approved": 463,
+      "rejected": 366,
+      "requested_amount_inr": 1105863000.0,
+      "approval_rate_pct": 55.85
+    }
+  ]
+}

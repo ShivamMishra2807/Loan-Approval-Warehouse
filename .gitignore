@@ -1,0 +1,10 @@
+.env
+.venv/
+__pycache__/
+*.py[cod]
+models/*.joblib
+reports/*
+!reports/.gitkeep
+data/raw/*
+!data/raw/.gitkeep
+.pytest_cache/

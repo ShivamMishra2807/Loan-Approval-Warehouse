@@ -1,0 +1,1380 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Loan Intelligence Warehouse · Enterprise Analytics Platform</title>
+  <meta name="description"
+    content="Standalone web-based business intelligence, dimensional warehouse exploration, OLAP analytics, and machine learning underwriting platform for Indian retail loan portfolios.">
+  <link rel="stylesheet" href="/web/css/style.css">
+  <!-- Google Fonts: Inter for UI, JetBrains Mono for code -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Plotly.js for enterprise charting -->
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+</head>
+
+<body>
+
+  <!-- Top Enterprise Header -->
+  <header class="app-header">
+    <div class="brand-wrap">
+      <div class="brand-badge" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 3v18h18"/>
+          <path d="m19 9-5 5-4-4-3 3"/>
+        </svg>
+      </div>
+      <div class="brand-titles">
+        <div class="brand-title-row">
+          <h1>Loan Intelligence Warehouse</h1>
+          <span class="brand-edition-tag">Enterprise BI & ML</span>
+        </div>
+        <p>Dimensional Credit Warehouse, OLAP Multi-Cube & Machine Learning Underwriting Engine</p>
+      </div>
+    </div>
+    <div class="header-status-bar">
+      <div class="status-indicator">
+        <span class="status-dot" id="dbStatusDot"></span>
+        <span id="dbStatusText">PostgreSQL Connected</span>
+      </div>
+      <div class="status-indicator">
+        <span class="status-dot" id="modelStatusDot"></span>
+        <span id="modelStatusText">Model Active</span>
+      </div>
+      <button class="btn-refresh" id="btnRefreshAll" title="Reload live warehouse data">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" />
+        </svg>
+        Refresh Warehouse
+      </button>
+    </div>
+  </header>
+
+  <!-- Sticky Global Filter Bar -->
+  <section class="filter-bar-sticky" aria-label="Portfolio Filters">
+    <div class="filter-bar-inner">
+      <div class="filter-group-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+        </svg>
+        <span>Global Filters</span>
+        <span class="filter-badge" id="activeFilterCount" style="display: none;">0 Active</span>
+      </div>
+      <div class="filter-controls">
+        <div class="filter-item">
+          <label for="filterRegion">Region</label>
+          <select id="filterRegion" class="filter-select">
+            <option value="all">All Regions</option>
+            <option value="West">West</option>
+            <option value="South">South</option>
+            <option value="North">North</option>
+            <option value="East">East</option>
+            <option value="Central">Central</option>
+          </select>
+        </div>
+        <div class="filter-item">
+          <label for="filterProduct">Loan Product</label>
+          <select id="filterProduct" class="filter-select">
+            <option value="all">All Products</option>
+            <option value="Home Loan">Home Loan</option>
+            <option value="Personal Loan">Personal Loan</option>
+            <option value="Business Loan">Business Loan</option>
+            <option value="Vehicle Loan">Vehicle Loan</option>
+            <option value="MSME Loan">MSME Loan</option>
+            <option value="Agriculture Loan">Agriculture Loan</option>
+          </select>
+        </div>
+        <div class="filter-item">
+          <label for="filterCreditBand">Credit Band</label>
+          <select id="filterCreditBand" class="filter-select">
+            <option value="all">All Credit Bands</option>
+            <option value="Excellent">Excellent (750+)</option>
+            <option value="Good">Good (650-749)</option>
+            <option value="Fair">Fair (550-649)</option>
+            <option value="Low">Low (&lt;550)</option>
+          </select>
+        </div>
+        <div class="filter-item">
+          <label for="filterIncomeBand">Income Band</label>
+          <select id="filterIncomeBand" class="filter-select">
+            <option value="all">All Income Bands</option>
+            <option value="High">High (&gt;₹12L)</option>
+            <option value="Upper-middle">Upper-middle (₹6L-12L)</option>
+            <option value="Lower-middle">Lower-middle (₹3L-6L)</option>
+            <option value="Low">Low (&lt;₹3L)</option>
+          </select>
+        </div>
+        <div class="filter-item">
+          <label for="filterOutcome">Outcome</label>
+          <select id="filterOutcome" class="filter-select">
+            <option value="all">All Outcomes</option>
+            <option value="Approved">Approved</option>
+            <option value="Rejected">Rejected</option>
+          </select>
+        </div>
+        <div class="filter-item">
+          <label for="filterEmployment">Employment</label>
+          <select id="filterEmployment" class="filter-select">
+            <option value="all">All Types</option>
+            <option value="Salaried">Salaried</option>
+            <option value="Self-Employed">Self-Employed</option>
+          </select>
+        </div>
+        <button class="btn-reset-filters" id="btnResetFilters" type="button">Reset Filters</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modern E-Commerce / SaaS Navigation Tabs Bar -->
+  <nav class="nav-tabs-bar" aria-label="Platform Sections">
+    <!-- Mobile Fast-Jump Dropdown -->
+    <div class="mobile-nav-select-wrap">
+      <span class="mobile-nav-label">Navigation</span>
+      <select id="mobileTabSelect" class="mobile-tab-select" aria-label="Select Dashboard View">
+        <option value="overview">01 · Executive Overview</option>
+        <option value="applications">02 · Application Analytics</option>
+        <option value="repayments">03 · Repayment Analytics</option>
+        <option value="quality">04 · Data Quality & ETL</option>
+        <option value="warehouse">05 · Warehouse Explorer</option>
+        <option value="olap">06 · SQL & OLAP Analytics</option>
+        <option value="segmentation">07 · Customer Segmentation</option>
+        <option value="models">08 · Model Analytics</option>
+        <option value="predict">09 · Prediction Lab</option>
+        <option value="methodology">10 · Methodology & Findings</option>
+      </select>
+    </div>
+
+    <!-- Desktop & Tablet Pill Track with Scroll Controls -->
+    <div class="nav-tabs-container">
+      <button class="nav-scroll-btn left" id="btnScrollTabsLeft" type="button" aria-label="Scroll navigation left">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="m15 18-6-6 6-6"/>
+        </svg>
+      </button>
+
+      <div class="nav-tabs-inner" id="navTabsTrack">
+        <a href="#overview" class="nav-tab-btn active" data-tab="overview">
+          <span class="tab-badge">01</span>
+          <span class="tab-text">Executive Overview</span>
+        </a>
+        <a href="#applications" class="nav-tab-btn" data-tab="applications">
+          <span class="tab-badge">02</span>
+          <span class="tab-text">Application Analytics</span>
+        </a>
+        <a href="#repayments" class="nav-tab-btn" data-tab="repayments">
+          <span class="tab-badge">03</span>
+          <span class="tab-text">Repayment Analytics</span>
+        </a>
+        <a href="#quality" class="nav-tab-btn" data-tab="quality">
+          <span class="tab-badge">04</span>
+          <span class="tab-text">Data Quality & ETL</span>
+        </a>
+        <a href="#warehouse" class="nav-tab-btn" data-tab="warehouse">
+          <span class="tab-badge">05</span>
+          <span class="tab-text">Warehouse Explorer</span>
+        </a>
+        <a href="#olap" class="nav-tab-btn" data-tab="olap">
+          <span class="tab-badge">06</span>
+          <span class="tab-text">SQL & OLAP Studio</span>
+        </a>
+        <a href="#segmentation" class="nav-tab-btn" data-tab="segmentation">
+          <span class="tab-badge">07</span>
+          <span class="tab-text">Customer Segmentation</span>
+        </a>
+        <a href="#models" class="nav-tab-btn" data-tab="models">
+          <span class="tab-badge">08</span>
+          <span class="tab-text">Model Analytics</span>
+        </a>
+        <a href="#predict" class="nav-tab-btn" data-tab="predict">
+          <span class="tab-badge hot">09</span>
+          <span class="tab-text">Prediction Lab</span>
+        </a>
+        <a href="#methodology" class="nav-tab-btn" data-tab="methodology">
+          <span class="tab-badge">10</span>
+          <span class="tab-text">Methodology</span>
+        </a>
+      </div>
+
+      <button class="nav-scroll-btn right" id="btnScrollTabsRight" type="button" aria-label="Scroll navigation right">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="m9 18 6-6-6-6"/>
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Application Body -->
+  <main class="app-main">
+
+    <!-- ========================================== -->
+    <!-- SECTION 1: EXECUTIVE OVERVIEW -->
+    <!-- ========================================== -->
+    <section id="section-overview" class="section-container active" aria-labelledby="heading-overview">
+      <div class="section-header">
+        <div class="section-eyebrow">01 / EXECUTIVE OVERVIEW</div>
+        <h2 id="heading-overview">Portfolio at a Glance</h2>
+        <p>High-level portfolio performance, underwriting volumes, and evidence-based findings calculated directly from
+          the PostgreSQL warehouse.</p>
+      </div>
+
+      <!-- 6 Key Performance Indicators -->
+      <div class="kpi-grid">
+        <article class="kpi-card">
+          <span class="kpi-label">Total Applications</span>
+          <div class="kpi-value" id="kpiTotalApps">—</div>
+          <div class="kpi-subtext" id="kpiOutcomeSplit">Loading applications…</div>
+        </article>
+        <article class="kpi-card">
+          <span class="kpi-label">Approval Rate</span>
+          <div class="kpi-value" id="kpiApprovalRate">—</div>
+          <div class="kpi-subtext"><span class="kpi-tag good" id="kpiRejectionTag">Rejection: —</span></div>
+        </article>
+        <article class="kpi-card">
+          <span class="kpi-label">Avg Requested Loan</span>
+          <div class="kpi-value" id="kpiAvgLoan">—</div>
+          <div class="kpi-subtext" id="kpiAvgSanctioned">Avg Sanctioned: —</div>
+        </article>
+        <article class="kpi-card">
+          <span class="kpi-label">Avg Credit Score (CIBIL)</span>
+          <div class="kpi-value" id="kpiAvgCibil">—</div>
+          <div class="kpi-subtext"><span class="kpi-tag neutral" id="kpiCibilTier">Prime Band</span></div>
+        </article>
+        <article class="kpi-card">
+          <span class="kpi-label">Repayment Instalments</span>
+          <div class="kpi-value" id="kpiRepaymentCount">—</div>
+          <div class="kpi-subtext" id="kpiUniqueLoans">Across 5,000 unique loans</div>
+        </article>
+        <article class="kpi-card">
+          <span class="kpi-label">Data Pipeline Health</span>
+          <div class="kpi-value" id="kpiPipelineStatus">Active</div>
+          <div class="kpi-subtext" id="kpiLastEtl">Last Run: Ingested 5,000 rows</div>
+        </article>
+      </div>
+
+      <!-- Dynamically Generated Key Findings -->
+      <div class="findings-panel" aria-label="Key Analytical Findings">
+        <div class="findings-header">
+          <h3>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="16" x2="12" y2="12" />
+              <line x1="12" y1="8" x2="12.01" y2="8" />
+            </svg>
+            Key Warehouse Findings & Evidence-Based Observations
+          </h3>
+          <span class="kpi-tag neutral">Dynamically Generated from Warehouse Data</span>
+        </div>
+        <div class="findings-grid" id="findingsGrid">
+          <div class="finding-card">
+            <div class="finding-body">Calculating warehouse observations…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Core Charts Grid -->
+      <div class="charts-grid-2col">
+        <article class="chart-card">
+          <div class="chart-card-head">
+            <div>
+              <h3>Application Outcomes Distribution</h3>
+              <p>Proportion and absolute volume of Approved versus Rejected loan requests</p>
+            </div>
+          </div>
+          <div class="chart-container" id="chartOverviewOutcomes"></div>
+          <div class="chart-insight" id="insightOverviewOutcomes">
+            <b>Underwriting Baseline:</b> Visualizes the primary portfolio acceptance ratio across all ingested
+            applications.
+          </div>
+        </article>
+
+        <article class="chart-card">
+          <div class="chart-card-head">
+            <div>
+              <h3>Approval Rate by Credit Score Band</h3>
+              <p>Underwriting success probabilities across CIBIL credit score tiers</p>
+            </div>
+          </div>
+          <div class="chart-container" id="chartOverviewCreditBands"></div>
+          <div class="chart-insight" id="insightOverviewCreditBands">
+            <b>Credit Risk Gradient:</b> Demonstrates how bureau scores correlate with commercial approval decisions.
+          </div>
+        </article>
+      </div>
+
+      <div class="charts-grid-2col">
+        <article class="chart-card">
+          <div class="chart-card-head">
+            <div>
+              <h3>Regional Ingestion Volume & Approval Rates</h3>
+              <p>Geographic footprint across Indian operational zones</p>
+            </div>
+          </div>
+          <div class="chart-container" id="chartOverviewRegions"></div>
+          <div class="chart-insight" id="insightOverviewRegions">
+            <b>Geographic Footprint:</b> Informs zonal branch expansion and regional risk adjustment.
+          </div>
+        </article>
+
+        <article class="chart-card">
+          <div class="chart-card-head">
+            <div>
+              <h3>Loan Product Portfolio Mix</h3>
+              <p>Requested loan volumes and average ticket size by retail lending product</p>
+            </div>
+          </div>
+          <div class="chart-container" id="chartOverviewProducts"></div>
+          <div class="chart-insight" id="insightOverviewProducts">
+            <b>Product Allocation:</b> Contrasts high-volume consumer loans with asset-backed commercial mortgages.
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 2: APPLICATION ANALYTICS -->
+    <!-- ========================================== -->
+    <section id="section-applications" class="section-container" aria-labelledby="heading-applications">
+      <div class="section-header">
+        <div class="section-eyebrow">02 / APPLICATION ANALYTICS</div>
+        <h2 id="heading-applications">Credit Risk, Affordability & Demographic Deep Dive</h2>
+        <p>Investigate applicant leverage, income bands, credit tiers, education, and employment group dynamics.</p>
+      </div>
+
+      <div class="charts-grid-2col">
+        <article class="chart-card">
+          <div class="chart-card-head">
+            <div>
+              <h3>Approval Rate Heatmap: Credit Band × Income Band</h3>
+              <p>Two-dimensional cross-tabulation of credit rating against annual applicant earnings</p>
+            </div>
+          </div>
+          <div class="chart-container tall" id="chartAppMatrix"></div>
+          <div class="chart-insight" id="insightAppMatrix">
+            <b>Affordability vs Credit Score:</b> Evaluates whether higher income compensates for lower credit scores.
+          </div>
+        </article>
+
+        <article class="chart-card">
+          <div class="chart-card-head">
+            <div>
+              <h3>Requested Loan Amount Distribution by Outcome</h3>
+              <p>Quartiles, median, and dispersion for Approved versus Rejected requests (INR)</p>
+            </div>
+          </div>
+          <div class="chart-container tall" id="chartAppAmounts"></div>
+          <div class="chart-insight" id="insightAppAmounts">
+            <b>Ticket Size Distribution:</b> Shows ticket size percentiles across approved and declined credit requests.
+          </div>
+        </article>
+      </div>
+
+      <div class="charts-grid-3col">
+        <article class="chart-card">
+          <div class="chart-card-head">
+            <div>
+              <h3>Leverage (Loan-to-Income) Distribution</h3>
+              <p>Approval rate across applicant debt burden tiers</p>
+            </div>
+          </div>
+          <div class="chart-container" id="chartAppLti"></div>
+          <div class="chart-insight">
+            <b>Leverage Thresholds:</b> Applicants requesting over 8x annual income undergo rigorous scrutiny.
+          </div>
+        </article>
+
+        <article class="chart-card">
+          <div class="chart-card-head">
+            <div>
+              <h3>Education Level Comparison</h3>
+              <p>Volume and approval rates across applicant qualifications</p>
+            </div>
+          </div>
+          <div class="chart-container" id="chartAppEducation"></div>
+          <div class="chart-insight">
+            <b>Education Patterns:</b> Assesses qualification level patterns in synthetic application records.
+          </div>
+        </article>
+
+        <article class="chart-card">
+          <div class="chart-card-head">
+            <div>
+              <h3>Employment Type Profile</h3>
+              <p>Salaried versus Self-Employed earnings and approval rates</p>
+            </div>
+          </div>
+          <div class="chart-container" id="chartAppEmployment"></div>
+          <div class="chart-insight">
+            <b>Employment Classification:</b> Compares income stability and sanction rates across borrower employment
+            status.
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 3: REPAYMENT ANALYTICS -->
+    <!-- ========================================== -->
+    <section id="section-repayments" class="section-container" aria-labelledby="heading-repayments">
+      <div class="section-header">
+        <div class="section-eyebrow">03 / REPAYMENT ANALYTICS</div>
+        <h2 id="heading-repayments">Instalment Cash Flows, Delinquency & NPA Surveillance</h2>
+        <p>Comprehensive tracking of 56,447 monthly repayment observations across 5,000 distinct loans. Clearly
+          distinguishes instalments from loan entities.</p>
+      </div>
+
+      <!-- Repayment KPI Summary Cards -->
+      <div class="kpi-grid">
+        <article class="kpi-card">
+          <span class="kpi-label">Total Monthly Instalments</span>
+          <div class="kpi-value" id="kpiRepTotalInstalments">—</div>
+          <div class="kpi-subtext">56,447 monthly ledger events</div>
+        </article>
+        <article class="kpi-card">
+          <span class="kpi-label">Distinct Active Loans</span>
+          <div class="kpi-value" id="kpiRepDistinctLoans">—</div>
+          <div class="kpi-subtext">Unique borrower loan accounts</div>
+        </article>
+        <article class="kpi-card">
+          <span class="kpi-label">Total Outstanding Principal</span>
+          <div class="kpi-value" id="kpiRepOutstanding">—</div>
+          <div class="kpi-subtext">Estimated current book exposure</div>
+        </article>
+        <article class="kpi-card">
+          <span class="kpi-label">90+ DPD (Illustrative NPA) Loans</span>
+          <div class="kpi-value" id="kpiRepNpaLoans">—</div>
+          <div class="kpi-subtext"><span class="kpi-tag danger" id="kpiRepNpaRate">NPA Rate: —</span></div>
+        </article>
+        <article class="kpi-card">
+          <span class="kpi-label">Portfolio Average DPD</span>
+          <div class="kpi-value" id="kpiRepAvgDpd">—</div>
+          <div class="kpi-subtext">Days-past-due across all loans</div>
+        </article>
+      </div>
+
+      <div class="charts-grid-2col">
+        <article class="chart-card">
+          <div class="chart-card-head">
+            <div>
+              <h3>Payment Status Distribution</h3>
+              <p>Instalment count and collection efficiency by settlement status</p>
+            </div>
+          </div>
+          <div class="chart-container" id="chartRepStatus"></div>
+          <div class="chart-insight" id="insightRepStatus">
+            <b>Collection Quality:</b> Distinguishes on-time collections from irregular and defaulted tranches.
+          </div>
+        </article>
+
+        <article class="chart-card">
+          <div class="chart-card-head">
+            <div>
+              <h3>Days-Past-Due (DPD) Buckets & Outstanding Principal</h3>
+              <p>Asset classification across SMA-1, SMA-2, and 90+ DPD Non-Performing Assets</p>
+            </div>
+          </div>
+          <div class="chart-container" id="chartRepDpd"></div>
+          <div class="chart-insight" id="insightRepDpd">
+            <b>Stressed Asset Migration:</b> Tracks capital exposure across early-warning delinquency stages.
+          </div>
+        </article>
+      </div>
+
+      <article class="chart-card chart-card-full">
+        <div class="chart-card-head">
+          <div>
+            <h3>Monthly Repayment Cash Flow & Collection Trends Over Time</h3>
+            <p>Scheduled EMI obligations versus actual collections by instalment due month</p>
+          </div>
+        </div>
+        <div class="chart-container tall" id="chartRepTrend"></div>
+        <div class="chart-insight">
+          <b>Time-Series Cash Flow:</b> Illustrates monthly cash recovery rates and macroeconomic seasonality across
+          loan vintages.
+        </div>
+      </article>
+
+      <div class="table-card">
+        <div class="chart-card-head">
+          <div>
+            <h3>Payment Status Ledger Summary</h3>
+            <p>Detailed aggregation of scheduled EMI, actual amount paid, and days-past-due</p>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table" id="tableRepaymentsSummary">
+            <thead>
+              <tr>
+                <th>Payment Status</th>
+                <th>Instalment Count</th>
+                <th>Portfolio Share (%)</th>
+                <th>Avg Days Past Due</th>
+                <th>Scheduled EMI (₹)</th>
+                <th>Amount Collected (₹)</th>
+                <th>Illustrative NPA Records</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="7">Loading repayment ledger…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 4: DATA QUALITY & ETL -->
+    <!-- ========================================== -->
+    <section id="section-quality" class="section-container" aria-labelledby="heading-quality">
+      <div class="section-header">
+        <div class="section-eyebrow">04 / DATA QUALITY & ETL</div>
+        <h2 id="heading-quality">Data Pipeline Architecture & Verification</h2>
+        <p>End-to-end auditability from raw CSV ingestion to PostgreSQL staging, validation rules, quarantine handling,
+          and warehouse loading.</p>
+      </div>
+
+      <!-- Pipeline Architecture Diagram -->
+      <div class="diagram-canvas" aria-label="ETL Pipeline Architecture">
+        <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 14px; color: var(--text-primary);">Data Engineering
+          Lifecycle: Ingestion ➔ Warehouse</h3>
+        <div class="diagram-svg-wrap">
+          <svg viewBox="0 0 960 140"
+            style="width: 100%; max-width: 960px; height: 140px; font-family: var(--font-sans);">
+            <!-- Stage 1 -->
+            <rect x="10" y="20" width="135" height="100" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5" />
+            <text x="77" y="50" font-size="12" font-weight="700" fill="#1e40af" text-anchor="middle">1. Source
+              CSV</text>
+            <text x="77" y="70" font-size="11" fill="#475569" text-anchor="middle">5,000 Rows</text>
+            <text x="77" y="90" font-size="10" fill="#64748b" text-anchor="middle">data/raw/...</text>
+
+            <line x1="145" y1="70" x2="175" y2="70" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)" />
+
+            <!-- Stage 2 -->
+            <rect x="175" y="20" width="135" height="100" rx="8" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5" />
+            <text x="242" y="50" font-size="12" font-weight="700" fill="#15803d" text-anchor="middle">2.
+              Validation</text>
+            <text x="242" y="70" font-size="11" fill="#475569" text-anchor="middle">12 Rule Checks</text>
+            <text x="242" y="90" font-size="10" fill="#15803d" text-anchor="middle">0 Quarantined</text>
+
+            <line x1="310" y1="70" x2="340" y2="70" stroke="#94a3b8" stroke-width="2" />
+
+            <!-- Stage 3 -->
+            <rect x="340" y="20" width="135" height="100" rx="8" fill="#faf5ff" stroke="#a855f7" stroke-width="1.5" />
+            <text x="407" y="50" font-size="12" font-weight="700" fill="#7e22ce" text-anchor="middle">3.
+              Transform</text>
+            <text x="407" y="70" font-size="11" fill="#475569" text-anchor="middle">Derived Ratios</text>
+            <text x="407" y="90" font-size="10" fill="#64748b" text-anchor="middle">LTI, ATL, Bands</text>
+
+            <line x1="475" y1="70" x2="505" y2="70" stroke="#94a3b8" stroke-width="2" />
+
+            <!-- Stage 4 -->
+            <rect x="505" y="20" width="135" height="100" rx="8" fill="#f8fafc" stroke="#64748b" stroke-width="1.5" />
+            <text x="572" y="50" font-size="12" font-weight="700" fill="#334155" text-anchor="middle">4. JSONB
+              Staging</text>
+            <text x="572" y="70" font-size="11" fill="#475569" text-anchor="middle">raw_loan_app</text>
+            <text x="572" y="90" font-size="10" fill="#64748b" text-anchor="middle">Idempotent Upsert</text>
+
+            <line x1="640" y1="70" x2="670" y2="70" stroke="#94a3b8" stroke-width="2" />
+
+            <!-- Stage 5 -->
+            <rect x="670" y="20" width="145" height="100" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="2" />
+            <text x="742" y="50" font-size="12" font-weight="700" fill="#1e40af" text-anchor="middle">5. Warehouse
+              Facts</text>
+            <text x="742" y="70" font-size="11" fill="#475569" text-anchor="middle">fact_loan_app (5k)</text>
+            <text x="742" y="90" font-size="10" fill="#2563eb" text-anchor="middle">fact_repayment (56k)</text>
+
+            <line x1="815" y1="70" x2="845" y2="70" stroke="#94a3b8" stroke-width="2" />
+
+            <!-- Stage 6 -->
+            <rect x="845" y="20" width="105" height="100" rx="8" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5" />
+            <text x="897" y="50" font-size="12" font-weight="700" fill="#15803d" text-anchor="middle">6.
+              Analytics</text>
+            <text x="897" y="70" font-size="11" fill="#475569" text-anchor="middle">OLAP &amp; ML</text>
+            <text x="897" y="90" font-size="10" fill="#15803d" text-anchor="middle">Interactive BI</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- ETL Run History Table -->
+      <div class="table-card">
+        <div class="chart-card-head">
+          <div>
+            <h3>ETL Execution Audit History (etl_run_log)</h3>
+            <p>Traceable execution timestamps, row counts, and status recorded by the pipeline</p>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table" id="tableEtlHistory">
+            <thead>
+              <tr>
+                <th>Run ID</th>
+                <th>Status</th>
+                <th>Started At</th>
+                <th>Finished At</th>
+                <th>Duration (s)</th>
+                <th>Source Rows</th>
+                <th>Accepted Rows</th>
+                <th>Quarantined Rows</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="8">Loading ETL log…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 5: WAREHOUSE EXPLORER -->
+    <!-- ========================================== -->
+    <section id="section-warehouse" class="section-container" aria-labelledby="heading-warehouse">
+      <div class="section-header">
+        <div class="section-eyebrow">05 / WAREHOUSE EXPLORER</div>
+        <h2 id="heading-warehouse">Dimensional Architecture & Record Previews</h2>
+        <p>Interactive star-schema and snowflake-schema diagrams, searchable live table explorer, and enterprise data
+          dictionary.</p>
+      </div>
+
+      <!-- Star Schema Visual Diagram -->
+      <div class="diagram-canvas" aria-label="Star Schema Diagram">
+        <div class="chart-card-head">
+          <div>
+            <h3>Star-Schema Dimensional Architecture</h3>
+            <p>Central transactional fact fact_loan_application surrounded by conformed lookup dimensions</p>
+          </div>
+          <span class="kpi-tag neutral">Grain: 1 Row per Loan Application</span>
+        </div>
+        <div class="diagram-svg-wrap">
+          <svg viewBox="0 0 940 380"
+            style="width: 100%; max-width: 940px; height: 380px; font-family: var(--font-sans);">
+            <!-- Central Fact Table -->
+            <rect x="330" y="110" width="280" height="160" rx="8" fill="#1e293b" stroke="#0f172a" stroke-width="2" />
+            <text x="470" y="135" font-size="14" font-weight="700" fill="#ffffff"
+              text-anchor="middle">fact_loan_application</text>
+            <text x="470" y="152" font-size="11" fill="#93c5fd" text-anchor="middle">PK: loan_id (TEXT)</text>
+            <line x1="340" y1="160" x2="600" y2="160" stroke="#334155" stroke-width="1" />
+            <text x="350" y="180" font-size="11" fill="#cbd5e1">FK: region, loan_product, credit_band</text>
+            <text x="350" y="200" font-size="11" fill="#cbd5e1">FK: education, self_employed, loan_status</text>
+            <text x="350" y="220" font-size="11" fill="#cbd5e1">Measures: loan_amount, cibil_score, income</text>
+            <text x="350" y="240" font-size="11" fill="#cbd5e1">Ratios: loan_to_income, asset_to_loan</text>
+            <text x="350" y="260" font-size="10" fill="#94a3b8">Row Count: 5,000 records</text>
+
+            <!-- Dim 1: dim_region (Top Left) -->
+            <rect x="40" y="20" width="200" height="90" rx="6" fill="#f8fafc" stroke="#3b82f6" stroke-width="1.5" />
+            <text x="140" y="42" font-size="12" font-weight="700" fill="#1e40af" text-anchor="middle">dim_region</text>
+            <text x="55" y="62" font-size="11" fill="#475569">PK: region_key</text>
+            <text x="55" y="80" font-size="11" fill="#475569">Attributes: region, states</text>
+            <line x1="240" y1="75" x2="330" y2="135" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="4,4" />
+
+            <!-- Dim 2: dim_loan_product (Top Right) -->
+            <rect x="700" y="20" width="200" height="90" rx="6" fill="#f8fafc" stroke="#3b82f6" stroke-width="1.5" />
+            <text x="800" y="42" font-size="12" font-weight="700" fill="#1e40af"
+              text-anchor="middle">dim_loan_product</text>
+            <text x="715" y="62" font-size="11" fill="#475569">PK: product_key</text>
+            <text x="715" y="80" font-size="11" fill="#475569">Attributes: loan_product, category</text>
+            <line x1="700" y1="75" x2="610" y2="135" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="4,4" />
+
+            <!-- Dim 3: dim_credit_band (Bottom Left) -->
+            <rect x="40" y="270" width="200" height="90" rx="6" fill="#f8fafc" stroke="#3b82f6" stroke-width="1.5" />
+            <text x="140" y="292" font-size="12" font-weight="700" fill="#1e40af"
+              text-anchor="middle">dim_credit_band</text>
+            <text x="55" y="312" font-size="11" fill="#475569">PK: credit_band_key</text>
+            <text x="55" y="330" font-size="11" fill="#475569">Attributes: credit_band, risk_tier</text>
+            <line x1="240" y1="305" x2="330" y2="245" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="4,4" />
+
+            <!-- Dim 4: fact_loan_repayment (Bottom Right) -->
+            <rect x="700" y="270" width="200" height="90" rx="6" fill="#f8fafc" stroke="#16a34a" stroke-width="1.5" />
+            <text x="800" y="292" font-size="12" font-weight="700" fill="#15803d"
+              text-anchor="middle">fact_loan_repayment</text>
+            <text x="715" y="312" font-size="11" fill="#475569">PK: repayment_id</text>
+            <text x="715" y="330" font-size="11" fill="#475569">FK: loan_id (1:N join)</text>
+            <line x1="700" y1="305" x2="610" y2="245" stroke="#16a34a" stroke-width="1.5" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Live Searchable Table Preview -->
+      <div class="table-card">
+        <div class="table-toolbar">
+          <div>
+            <h3 style="font-size: 14px; font-weight: 700; color: var(--text-primary);">Warehouse Table Preview & Record
+              Browser</h3>
+            <p style="font-size: 11px; color: var(--text-muted);">Inspect paginated records directly from PostgreSQL
+              tables</p>
+          </div>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <select id="previewTableSelect" class="filter-select">
+              <option value="fact_loan_application">fact_loan_application (5,000 rows)</option>
+              <option value="fact_loan_repayment">fact_loan_repayment (56,447 rows)</option>
+              <option value="dim_region">dim_region</option>
+              <option value="dim_loan_product">dim_loan_product</option>
+              <option value="dim_credit_band">dim_credit_band</option>
+              <option value="dim_education">dim_education</option>
+              <option value="dim_employment_type">dim_employment_type</option>
+              <option value="dim_status">dim_status</option>
+              <option value="raw_loan_application">raw_loan_application</option>
+              <option value="etl_run_log">etl_run_log</option>
+            </select>
+            <input type="search" id="previewSearchInput" class="table-search-input" placeholder="Search table records…">
+          </div>
+        </div>
+
+        <div class="table-responsive" style="max-height: 400px;">
+          <table class="data-table" id="tableWarehousePreview">
+            <thead>
+              <tr>
+                <th>Loading columns…</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Loading records…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="table-pager">
+          <span id="previewPageLabel">Page 1 of 1 · 0 rows</span>
+          <div class="pager-buttons">
+            <button class="btn-page" id="btnPreviewPrev">Previous</button>
+            <button class="btn-page" id="btnPreviewNext">Next</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 6: SQL & OLAP ANALYTICS -->
+    <!-- ========================================== -->
+    <section id="section-olap" class="section-container" aria-labelledby="heading-olap">
+      <div class="section-header">
+        <div class="section-eyebrow">06 / SQL & OLAP ANALYTICS</div>
+        <h2 id="heading-olap">Multi-Dimensional OLAP Studio</h2>
+        <p>Interactive database-backed OLAP operations: Roll-up, Drill-down, Slice, Dice, and Pivot cross-tabulation
+          with parameterised SQL generation.</p>
+      </div>
+
+      <!-- OLAP Studio Controls Card -->
+      <div class="olap-controls-card">
+        <div class="olap-controls-grid">
+          <div class="olap-field">
+            <label for="olapOperation">OLAP Operation</label>
+            <select id="olapOperation" class="olap-select">
+              <option value="aggregate">Aggregate (Group By)</option>
+              <option value="drilldown">Drill-Down (Hierarchical)</option>
+              <option value="slice">Slice (Filter 1 Dimension)</option>
+              <option value="dice">Dice (Multi-Attribute)</option>
+              <option value="pivot">Pivot (Cross-Tabulation)</option>
+            </select>
+          </div>
+          <div class="olap-field">
+            <label for="olapDimension">Primary Dimension</label>
+            <select id="olapDimension" class="olap-select">
+              <option value="region">Region</option>
+              <option value="state">State</option>
+              <option value="city_tier">City Tier</option>
+              <option value="loan_product">Loan Product</option>
+              <option value="loan_purpose">Loan Purpose</option>
+              <option value="credit_band">Credit Band</option>
+              <option value="income_band">Income Band</option>
+              <option value="amount_band">Amount Band</option>
+              <option value="education">Education</option>
+              <option value="self_employed">Employment</option>
+              <option value="age_band">Age Band</option>
+              <option value="loan_status">Loan Status</option>
+            </select>
+          </div>
+          <div class="olap-field">
+            <label for="olapSecDimension">Secondary Dimension (Pivot)</label>
+            <select id="olapSecDimension" class="olap-select">
+              <option value="">None (1D Summary)</option>
+              <option value="loan_product">Loan Product</option>
+              <option value="credit_band">Credit Band</option>
+              <option value="income_band">Income Band</option>
+              <option value="region">Region</option>
+              <option value="education">Education</option>
+              <option value="self_employed">Employment</option>
+            </select>
+          </div>
+          <div class="olap-field">
+            <label for="olapMeasure">Aggregated Measure</label>
+            <select id="olapMeasure" class="olap-select">
+              <option value="approval_rate">Approval Rate (%)</option>
+              <option value="count">Total Applications (n)</option>
+              <option value="avg_amount">Average Loan Amount (₹)</option>
+              <option value="sum_sanctioned">Total Sanctioned (₹)</option>
+              <option value="avg_cibil">Average CIBIL Score (pts)</option>
+              <option value="avg_lti">Average Loan-to-Income (x)</option>
+            </select>
+          </div>
+          <div class="olap-field" style="justify-content: flex-end;">
+            <button class="btn-execute-olap" id="btnExecuteOlap" type="button">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polygon points="5 3 19 12 5 21 5 3" />
+              </svg>
+              Execute Query
+            </button>
+          </div>
+        </div>
+
+        <!-- Formatted Executed SQL Box -->
+        <div class="sql-preview-box" id="sqlPreviewBox">
+          <button class="sql-copy-btn" id="btnCopySql" type="button">Copy SQL</button>
+          <code
+            id="sqlQueryText">SELECT region, COUNT(*), ROUND(100.0 * COUNT(*) FILTER (WHERE loan_status='Approved') / NULLIF(COUNT(*), 0), 2) AS approval_rate_pct FROM fact_loan_application GROUP BY region ORDER BY approval_rate_pct DESC;</code>
+        </div>
+      </div>
+
+      <!-- Analytical Findings Callout -->
+      <div class="chart-insight" style="margin-bottom: 20px; border-left-color: var(--accent-blue);"
+        id="olapFindingText">
+        <b>Analytical Synthesis:</b> Select dimensions and measures to query the warehouse database.
+      </div>
+
+      <!-- OLAP Results Grid (Chart + Table) -->
+      <div class="charts-grid-2col">
+        <article class="chart-card">
+          <div class="chart-card-head">
+            <div>
+              <h3 id="olapChartTitle">OLAP Visualisation</h3>
+              <p id="olapChartSubtitle">Rendered from database query result</p>
+            </div>
+          </div>
+          <div class="chart-container" id="chartOlapResult"></div>
+        </article>
+
+        <article class="table-card" style="margin-bottom: 0;">
+          <div class="chart-card-head">
+            <div>
+              <h3>OLAP Tabular Breakdown</h3>
+              <p>Exact aggregated figures and record counts</p>
+            </div>
+          </div>
+          <div class="table-responsive" style="max-height: 330px;">
+            <table class="data-table" id="tableOlapResult">
+              <thead>
+                <tr>
+                  <th>Dimension</th>
+                  <th>Applications</th>
+                  <th>Metric Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td colspan="3">Execute an OLAP query…</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 7: CUSTOMER SEGMENTATION -->
+    <!-- ========================================== -->
+    <section id="section-segmentation" class="section-container" aria-labelledby="heading-segmentation">
+      <div class="section-header">
+        <div class="section-eyebrow">07 / CUSTOMER SEGMENTATION</div>
+        <h2 id="heading-segmentation">Machine Learning-Based Applicant Clustering</h2>
+        <p>Unsupervised K-Means clustering (k=4) trained on applicant financials, leverage, and credit score
+          distributions. Non-judgmental behavioural profiles.</p>
+      </div>
+
+      <!-- 4 Segment Profile Cards -->
+      <div class="segments-grid" id="segmentsGrid">
+        <div class="segment-card">
+          <div class="segment-desc">Loading customer clusters…</div>
+        </div>
+      </div>
+
+      <!-- Segment Comparison Visuals -->
+      <div class="charts-grid-2col">
+        <article class="chart-card">
+          <div class="chart-card-head">
+            <div>
+              <h3>Cluster Size vs Approval Rate</h3>
+              <p>Portfolio concentration and underwriting outcome across the 4 clusters</p>
+            </div>
+          </div>
+          <div class="chart-container" id="chartSegmentApproval"></div>
+          <div class="chart-insight">
+            <b>Underwriting Gradient:</b> Prime Bureau Retail (76.7%) and Affluent Professionals (67.6%) achieve superior acceptance, while High-Value Mortgages (57.1%) require property lien verification, and Emerging Borrowers (25.4%) face tighter risk thresholds.
+          </div>
+        </article>
+
+        <article class="chart-card">
+          <div class="chart-card-head">
+            <div>
+              <h3>Financial Profile Comparison (Averages)</h3>
+              <p>Annual income, asset base, and CIBIL score distribution across borrower segments</p>
+            </div>
+          </div>
+          <div class="chart-container" id="chartSegmentFinancials"></div>
+          <div class="chart-insight">
+            <b>Balance Sheet Capacity:</b> High-Value Mortgage borrowers hold substantial property assets (avg ₹1.64 Cr) backing ₹81.9L loans, while Affluent Professionals maintain the lowest leverage (1.22x LTI).
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 8: MODEL ANALYTICS -->
+    <!-- ========================================== -->
+    <section id="section-models" class="section-container" aria-labelledby="heading-models">
+      <div class="section-header">
+        <div class="section-eyebrow">08 / MODEL ANALYTICS</div>
+        <h2 id="heading-models">Model Performance, Explainability & Test Predictions</h2>
+        <p>Direct evaluation of trained classification models on held-out test data (750 records). Features leakage
+          prevention and feature importance.</p>
+      </div>
+
+      <!-- Model Comparison Scorecard Table -->
+      <div class="table-card">
+        <div class="chart-card-head">
+          <div>
+            <h3>Supervised Model Comparison Scorecard (Held-Out Test Set)</h3>
+            <p>Evaluation across Accuracy, Precision, Recall, F1-Score, and ROC-AUC</p>
+          </div>
+          <span class="kpi-tag good">Selected Best Model: Random Forest</span>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table" id="tableModelScorecard">
+            <thead>
+              <tr>
+                <th>Model Architecture</th>
+                <th>Accuracy</th>
+                <th>Precision (Approved)</th>
+                <th>Recall (Approved)</th>
+                <th>F1-Score</th>
+                <th>ROC-AUC</th>
+                <th>Validation Rank</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="7">Loading model metrics…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="charts-grid-2col">
+        <article class="chart-card">
+          <div class="chart-card-head">
+            <div>
+              <h3>Confusion Matrix (Selected Random Forest)</h3>
+              <p>Actual vs predicted loan outcomes on held-out test records</p>
+            </div>
+          </div>
+          <div class="chart-container" id="chartModelConfusion"></div>
+          <div class="chart-insight" id="insightModelConfusion">
+            <b>Decision Boundaries:</b> High true positive count demonstrates strong sensitivity for prime applicant
+            approval.
+          </div>
+        </article>
+
+        <article class="chart-card">
+          <div class="chart-card-head">
+            <div>
+              <h3>Feature Importance (Top Underwriting Drivers)</h3>
+              <p>MDI Gini-impurity reduction from the Random Forest ensemble</p>
+            </div>
+          </div>
+          <div class="chart-container" id="chartModelImportance"></div>
+          <div class="chart-insight" id="insightModelImportance">
+            <b>Underwriting Drivers:</b> CIBIL bureau score, loan-to-income ratio, and requested loan amount dominate
+            model splits.
+          </div>
+        </article>
+      </div>
+
+      <!-- Test Prediction Explorer Table -->
+      <div class="table-card">
+        <div class="table-toolbar">
+          <div>
+            <h3 style="font-size: 14px; font-weight: 700; color: var(--text-primary);">Test Set Prediction Record
+              Browser</h3>
+            <p style="font-size: 11px; color: var(--text-muted);">Inspect individual test records, predicted
+              probabilities, and classification results</p>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+            <input type="search" id="predSearchInput" class="table-search-input"
+              placeholder="Search loan ID, state, product…">
+            <select id="predFilterOutcome" class="filter-select">
+              <option value="all">All Actual Outcomes</option>
+              <option value="Approved">Approved</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+            <select id="predFilterCorrect" class="filter-select">
+              <option value="all">All Results</option>
+              <option value="correct">Correct Predictions</option>
+              <option value="wrong">Incorrect Predictions</option>
+            </select>
+            <button class="btn-reset-filters" id="btnDownloadPredCsv" type="button">Download CSV</button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table" id="tableTestPredictions">
+            <thead>
+              <tr>
+                <th>Loan ID</th>
+                <th>Region</th>
+                <th>State</th>
+                <th>Product</th>
+                <th>Actual Outcome</th>
+                <th>Predicted Outcome</th>
+                <th>Approval Probability</th>
+                <th>Result</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="8">Loading test predictions…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="table-pager">
+          <span id="predPageLabel">Page 1 of 1 · 750 records</span>
+          <div class="pager-buttons">
+            <button class="btn-page" id="btnPredPrev">Previous</button>
+            <button class="btn-page" id="btnPredNext">Next</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 9: INTERACTIVE PREDICTION LAB -->
+    <!-- ========================================== -->
+    <section id="section-predict" class="section-container" aria-labelledby="heading-predict">
+      <div class="section-header">
+        <div class="section-eyebrow">09 / PREDICTION LAB</div>
+        <h2 id="heading-predict">Interactive Underwriting Simulator</h2>
+        <p>Simulate loan underwriting using trained machine learning models. Type any exact income or loan amount, choose your applied loan product, and observe dynamic underwriting factor explainability.</p>
+      </div>
+
+      <div class="predict-lab-wrap">
+        <!-- Form Side -->
+        <div class="predict-form-card">
+          <div class="chart-card-head">
+            <div>
+              <h3>Applicant Financial Parameters</h3>
+              <p>Type any custom figures or select an underwriting benchmark preset</p>
+            </div>
+          </div>
+
+          <!-- Presets -->
+          <div class="preset-buttons-bar">
+            <button class="btn-preset active" id="presetPrimeHome" type="button">
+              <span class="preset-tag">Home Loan</span> Prime Mortgage (₹45L)
+            </button>
+            <button class="btn-preset" id="presetHighRisk" type="button">
+              <span class="preset-tag">Personal</span> Unsecured Retail (₹18L)
+            </button>
+            <button class="btn-preset" id="presetMsmeGrowth" type="button">
+              <span class="preset-tag">MSME</span> Commercial Growth (₹28L)
+            </button>
+          </div>
+
+          <form id="formPredictionLab" autocomplete="off">
+            <!-- Applied Loan Product Selector -->
+            <div class="form-group form-group-full product-selection-box">
+              <div class="form-label-wrap">
+                <label for="inpLoanProduct">Loan Product Type Applied</label>
+                <span class="live-input-chip product" id="chipProduct">Home Loan (Mortgage)</span>
+              </div>
+              <select id="inpLoanProduct" class="form-control loan-product-select">
+                <option value="Home Loan" selected>🏠 Home Loan (Secured Residential Mortgage)</option>
+                <option value="Personal Loan">💳 Personal Loan (Unsecured Retail Facility)</option>
+                <option value="Vehicle Loan">🚗 Vehicle Loan (Auto Asset Hypothecation)</option>
+                <option value="Business Loan">🏢 Business Loan (Commercial Enterprise Term Debt)</option>
+                <option value="MSME Loan">🏭 MSME Loan (Priority Small Enterprise Credit)</option>
+                <option value="Agriculture Loan">🌾 Agriculture Loan (Priority Rural Sector)</option>
+              </select>
+              <small class="form-hint">Selected product dictates collateral standards, regulatory margin requirements, and risk policy checks.</small>
+            </div>
+
+            <div class="predict-form-grid">
+              <!-- Annual Income (Any value allowed!) -->
+              <div class="form-group">
+                <div class="form-label-wrap">
+                  <label for="inpIncome">Annual Income (₹ INR)</label>
+                  <span class="live-input-chip" id="chipIncome">₹8.50 Lakh</span>
+                </div>
+                <div class="input-with-symbol">
+                  <span class="input-symbol">₹</span>
+                  <input type="number" id="inpIncome" class="form-control symbol-pad" value="850000" min="0" step="any" placeholder="Type any income (e.g. 625000)" required>
+                </div>
+                <small class="form-hint">Type any exact annual income figure freely without fixed increments.</small>
+              </div>
+
+              <!-- Requested Loan Amount (Any value allowed!) -->
+              <div class="form-group">
+                <div class="form-label-wrap">
+                  <label for="inpLoanAmount">Requested Loan Amount (₹ INR)</label>
+                  <span class="live-input-chip" id="chipLoanAmount">₹24.00 Lakh</span>
+                </div>
+                <div class="input-with-symbol">
+                  <span class="input-symbol">₹</span>
+                  <input type="number" id="inpLoanAmount" class="form-control symbol-pad" value="2400000" min="1000" step="any" placeholder="Type any loan amount" required>
+                </div>
+                <small class="form-hint">Type any custom loan amount in Indian Rupees.</small>
+              </div>
+
+              <!-- Loan Term -->
+              <div class="form-group">
+                <div class="form-label-wrap">
+                  <label for="inpLoanTerm">Loan Term (Months)</label>
+                  <span class="live-input-chip" id="chipLoanTerm">3.0 Years (36 Mo)</span>
+                </div>
+                <input type="number" id="inpLoanTerm" class="form-control" value="36" min="1" max="360" step="1" required>
+                <small class="form-hint">Repayment tenure in months (6 to 360 months).</small>
+              </div>
+
+              <!-- CIBIL Bureau Score -->
+              <div class="form-group">
+                <div class="form-label-wrap">
+                  <label for="inpCibil">CIBIL Bureau Score (300-900)</label>
+                  <span class="live-input-chip prime" id="chipCibil">Prime Bureau (760)</span>
+                </div>
+                <input type="number" id="inpCibil" class="form-control" value="760" min="300" max="900" step="1" required>
+                <small class="form-hint">TransUnion CIBIL credit score (300 to 900).</small>
+              </div>
+
+              <!-- Total Asset Value (Any value allowed!) -->
+              <div class="form-group">
+                <div class="form-label-wrap">
+                  <label for="inpTotalAssets">Total Asset Value (₹ INR)</label>
+                  <span class="live-input-chip" id="chipTotalAssets">₹45.00 Lakh</span>
+                </div>
+                <div class="input-with-symbol">
+                  <span class="input-symbol">₹</span>
+                  <input type="number" id="inpTotalAssets" class="form-control symbol-pad" value="4500000" min="0" step="any" placeholder="Type total assets (e.g. 3500000)">
+                </div>
+                <small class="form-hint">Aggregated property, vehicle, bank, and luxury assets.</small>
+              </div>
+
+              <!-- Education -->
+              <div class="form-group">
+                <label for="inpEducation">Education Qualification</label>
+                <select id="inpEducation" class="form-control">
+                  <option value="Graduate" selected>Graduate</option>
+                  <option value="Not Graduate">Not Graduate</option>
+                  <option value="Post Graduate">Post Graduate / Professional</option>
+                </select>
+                <small class="form-hint">Applicant completed education tier.</small>
+              </div>
+
+              <!-- Employment Classification -->
+              <div class="form-group">
+                <label for="inpSelfEmployed">Employment Classification</label>
+                <select id="inpSelfEmployed" class="form-control">
+                  <option value="No" selected>Salaried Professional (Stable Payroll)</option>
+                  <option value="Yes">Self-Employed / Business Enterprise</option>
+                </select>
+                <small class="form-hint">Income source structure and stability.</small>
+              </div>
+
+              <!-- Dependents -->
+              <div class="form-group">
+                <label for="inpDependents">Number of Dependents</label>
+                <input type="number" id="inpDependents" class="form-control" value="2" min="0" max="15" step="1">
+                <small class="form-hint">Household financial dependents.</small>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-submit-predict" id="btnRunInference">
+              <span>Evaluate Underwriting Decision</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </form>
+        </div>
+
+        <!-- Result Side (E-Commerce Style Credit Decision Card) -->
+        <div class="predict-result-card" id="predictResultCard">
+          <div>
+            <div class="chart-card-head">
+              <div>
+                <h3>Underwriting Assessment</h3>
+                <p>Live inference output from trained Random Forest pipeline</p>
+              </div>
+              <span class="kpi-tag neutral" id="labModelVersion">Model: Random Forest v2</span>
+            </div>
+
+            <!-- Active Product & Policy Chip -->
+            <div class="decision-product-banner" id="labProductBanner">
+              <span class="product-badge-icon" id="labProductIcon">🏠</span>
+              <div>
+                <small>Assessed Product Facility</small>
+                <strong id="labProductTitle">Home Loan (Secured Residential Mortgage)</strong>
+              </div>
+            </div>
+
+            <!-- Decision Verdict Banner -->
+            <div class="result-decision-banner approved" id="labDecisionBanner">
+              <span class="decision-eyebrow">Recommended Underwriting Decision</span>
+              <span class="decision-badge-large" id="labPredictedClass">Approved</span>
+            </div>
+
+            <!-- Probability Meter -->
+            <div class="prob-meter-wrap">
+              <div class="prob-meter-header">
+                <span>Approval Confidence Probability</span>
+                <span class="prob-pct-val" id="labProbabilityText">82.5%</span>
+              </div>
+              <div class="prob-meter-bar">
+                <div class="prob-meter-fill" id="labProbabilityFill" style="width: 82.5%;"></div>
+              </div>
+            </div>
+
+            <!-- Leverage & Balance Sheet Ratios Grid -->
+            <div class="underwriting-ratios-grid">
+              <div class="ratio-item">
+                <small>Loan-to-Income (LTI)</small>
+                <strong id="labRatioLti">2.82x</strong>
+              </div>
+              <div class="ratio-item">
+                <small>Asset Coverage (ATL)</small>
+                <strong id="labRatioAtl">1.88x</strong>
+              </div>
+              <div class="ratio-item">
+                <small>Bureau Band</small>
+                <strong id="labBureauBand">Prime (760)</strong>
+              </div>
+            </div>
+
+            <h4 class="factors-section-title">Key Underwriting Drivers & Policy Rules</h4>
+            <div id="labFactorsList">
+              <div class="factor-item">
+                <span class="factor-badge positive">Positive</span>
+                <span><b>CIBIL Score:</b> Prime bureau score of 760 qualifies for preferential prime credit terms.</span>
+              </div>
+              <div class="factor-item">
+                <span class="factor-badge positive">Positive</span>
+                <span><b>Product Policy:</b> Secured residential mortgage supported by strong asset coverage (1.88x).</span>
+              </div>
+              <div class="factor-item">
+                <span class="factor-badge positive">Positive</span>
+                <span><b>Leverage (LTI):</b> Loan-to-income of 2.8x is well within manageable underwriting thresholds.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-insight" style="font-size: 11px; margin-top: 14px;">
+            <b>Model Governance Note:</b> Statistical prediction trained on dimensional credit warehouse records with strict leakage prevention. Educational decision-support simulator.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 10: METHODOLOGY & FINDINGS -->
+    <!-- ========================================== -->
+    <section id="section-methodology" class="section-container" aria-labelledby="heading-methodology">
+      <div class="section-header">
+        <div class="section-eyebrow">10 / METHODOLOGY & FINDINGS</div>
+        <h2 id="heading-methodology">Dataset Provenance, Warehouse Design & Governance</h2>
+        <p>Complete documentation of data engineering, star-schema dimensional modeling, OLAP methodology, and machine
+          learning governance.</p>
+      </div>
+
+      <div class="accordion-item open">
+        <div class="accordion-head">
+          <span>1. Dataset Provenance & Synthetic Nature</span>
+          <span>▾</span>
+        </div>
+        <div class="accordion-body">
+          <p>The dataset includes 5,000 synthetic Indian retail loan applications and 56,447 monthly repayment
+            observations. In accordance with regulatory integrity standards, all borrower identities, pan cards, bureau
+            records, and repayment histories are synthetically synthesized for data mining and warehousing coursework.
+            No proprietary customer or credit bureau (CIBIL/Equifax) data was harvested.</p>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-head">
+          <span>2. Data Cleansing & Feature Engineering</span>
+          <span>▾</span>
+        </div>
+        <div class="accordion-body">
+          <p>The automated ETL pipeline in <code>src/ln/etl_loans.py</code> normalises incoming column aliases, enforces
+            non-negative value constraints, verifies mandatory fields, and calculates key derived metrics:
+            <code>loan_to_income</code>, <code>asset_to_loan</code>, and credit/income band categorisations. Defective
+            records are quarantined into <code>reports/quarantine.csv</code>.
+          </p>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-head">
+          <span>3. Star-Schema vs Snowflake Warehouse Design</span>
+          <span>▾</span>
+        </div>
+        <div class="accordion-body">
+          <p>The warehouse implements a Star-Schema centered on <code>fact_loan_application</code>, supported by
+            conformed lookup dimensions (<code>dim_region</code>, <code>dim_loan_product</code>,
+            <code>dim_credit_band</code>, <code>dim_education</code>, <code>dim_employment_type</code>,
+            <code>dim_status</code>). A separate accumulating snapshot fact table <code>fact_loan_repayment</code>
+            records monthly instalment schedules. Indexes on status and credit bands ensure sub-second analytical
+            queries.
+          </p>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-head">
+          <span>4. Machine Learning & Leakage Prevention</span>
+          <span>▾</span>
+        </div>
+        <div class="accordion-body">
+          <p>The modeling pipeline in <code>src/ln/mining.py</code> rigorously excludes post-decision and leakage
+            attributes (e.g. <code>sanctioned_amount_inr</code>, <code>interest_rate_pct</code>, <code>emi_inr</code>,
+            <code>decision_reason</code>, <code>disbursement_date</code>). Models are fitted using stratified 70/15/15
+            train-validation-test partitions. Feature importance is computed from the Random Forest ensemble and
+            calibrated on held-out records.
+          </p>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-head">
+          <span>5. Ethical Lending & Limitations</span>
+          <span>▾</span>
+        </div>
+        <div class="accordion-body">
+          <p>Automated algorithms can perpetuate proxy biases. Demographic variables such as education and geographic
+            zones must not be utilized as solitary determinants of credit worthiness. Statistical correlations do not
+            prove causality. These analytical findings serve as illustrative decision-support demonstrations only.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="app-footer">
+    Indian Loan Intelligence Warehouse &middot; Standalone Business Intelligence Platform &middot; Synthetic Coursework Data
+  </footer>
+
+  <!-- Toast Notification element -->
+  <div class="toast-msg" id="toastMsg" role="status"></div>
+
+  <!-- Main Application Logic Script -->
+  <script src="/web/js/app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,7 @@
+loan_product,applications,approved,rejected,requested_amount_inr,approval_rate_pct
+Agriculture Loan,371,179,192,286319000,48.25
+Business Loan,644,346,298,1661617000,53.73
+Home Loan,1013,587,426,6475119000,57.95
+MSME Loan,656,320,336,1384809000,48.78
+Personal Loan,1487,808,679,1155542000,54.34
+Vehicle Loan,829,463,366,1105863000,55.85
