@@ -57,6 +57,24 @@ Open `http://127.0.0.1:8078` in your browser to access the complete Analytics Pl
 
 ---
 
+## Deploy to Vercel
+
+The project includes built-in Vercel configuration via [`vercel.json`](file:///c:/Users/Lenovo/Desktop/loan-intelligence-warehouse/vercel.json) and [`api/index.py`](file:///c:/Users/Lenovo/Desktop/loan-intelligence-warehouse/api/index.py).
+
+For a complete step-by-step setup guide with cloud database instructions, see **[DEPLOY_VERCEL.md](file:///c:/Users/Lenovo/Desktop/loan-intelligence-warehouse/DEPLOY_VERCEL.md)**.
+
+**Quick Settings for Vercel Import:**
+- **Framework Preset**: `Other`
+- **Root Directory**: `./` (Do **not** choose `src`)
+- **Build / Output / Install Commands**: Leave default / blank (toggles OFF)
+- **Environment Variables**:
+  - `LN_DSN`: `postgresql://...` (Cloud PostgreSQL instance such as Neon.tech or Supabase)
+  - `LN_REPORT_DIR`: `reports`
+  - `LN_MODEL_DIR`: `models`
+  - `LN_RANDOM_SEED`: `42`
+
+---
+
 ## Warehouse Star Schema
 
 The PostgreSQL warehouse implements a Star Schema centered on `fact_loan_application` with 55 attributes, accompanied by an accumulating periodic fact table `fact_loan_repayment`:
