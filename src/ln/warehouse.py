@@ -33,6 +33,23 @@ ALL_FIELDS = TEXT_FIELDS + NUM_FIELDS
 
 
 DDL = """
+CREATE TABLE IF NOT EXISTS raw_loan_application (
+    loan_id TEXT PRIMARY KEY,
+    payload JSONB NOT NULL,
+    loaded_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS etl_run_log (
+    run_id BIGSERIAL PRIMARY KEY,
+    started_at TIMESTAMPTZ DEFAULT now(),
+    finished_at TIMESTAMPTZ,
+    source_rows BIGINT,
+    accepted_rows BIGINT,
+    quarantined_rows BIGINT,
+    status TEXT,
+    details JSONB
+);
+
 CREATE TABLE IF NOT EXISTS dim_status (
     status_key BIGSERIAL PRIMARY KEY,
     loan_status TEXT UNIQUE NOT NULL
